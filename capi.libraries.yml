@@ -1,0 +1,6 @@
+view_content:
+  version: VERSION
+  js:
+    js/view-content.js: {}
+  dependencies:
+    - core/drupalSettings

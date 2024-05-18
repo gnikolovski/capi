@@ -1,0 +1,111 @@
+<?php
+
+/**
+ * @file
+ * Provides Meta Conversions API functionality.
+ */
+
+use Drupal\commerce_product\Entity\ProductInterface;
+use Drupal\commerce_product\Entity\ProductVariationInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_page_attachments().
+ */
+function capi_page_attachments(array &$attachments): void {
+  /** @var \Drupal\Core\Routing\AdminContext $admin_context */
+  $admin_context = \Drupal::service('router.admin_context');
+  if ($admin_context->isAdminRoute() === TRUE) {
+    return;
+  }
+
+  $attachments['#cache']['contexts'][] = 'user.roles';
+  $attachments['#cache']['tags'][] = 'config:capi.settings';
+
+  /** @var \Drupal\capi\Service\PixelBuilderService $pixel_builder_service */
+  $pixel_builder_service = \Drupal::service('capi.pixel_builder_service');
+
+  if ($pixel_builder_service->isPixelEnabled()) {
+    $attachments['#attached']['html_head'][] = [[
+      '#tag' => 'script',
+      '#value' => $pixel_builder_service->getPixelScriptCode(),
+    ],
+      'capi_script_code',
+    ];
+
+    $attachments['#attached']['html_head'][] = [[
+      '#type' => 'inline_template',
+      '#template' => $pixel_builder_service->getPixelNoScriptCode(),
+    ],
+      'capi_noscript_code',
+    ];
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view() for product entities.
+ */
+function capi_commerce_product_view(
+  array &$build,
+  ProductInterface $product,
+  EntityViewDisplayInterface $display,
+  $view_mode
+): void {
+  $build['#cache']['contexts'] = Cache::mergeContexts($build['#cache']['contexts'], [
+    'user.roles',
+    'url.path',
+    'url.query_args',
+  ]);
+
+  $build['#cache']['tags'][] = 'config:capi.settings';
+
+  /** @var \Drupal\capi\Service\PixelBuilderService $pixel_builder_service */
+  $pixel_builder_service = \Drupal::service('capi.pixel_builder_service');
+
+  if (
+    $product->isNew() === FALSE &&
+    capi_is_product_page($product) &&
+    empty($product->in_preview) &&
+    $pixel_builder_service->isPixelEnabled()
+  ) {
+    $build['#attached']['library'][] = 'capi/view_content';
+
+    // Retrieve the current product variation (default or from the 'v' query
+    // parameter).
+    /** @var \Drupal\commerce_product\ProductVariationStorageInterface $product_variation_storage */
+    $product_variation_storage = \Drupal::entityTypeManager()->getStorage('commerce_product_variation');
+    $product_variation = $product_variation_storage->loadFromContext($product);
+
+    if ($product_variation instanceof ProductVariationInterface) {
+      // Pass product variation data to JavaScript.
+      $url = Url::fromRoute('capi.view_content_endpoint');
+      $request = \Drupal::request();
+      $build['#attached']['drupalSettings']['capi']['viewContent']['url'] = $url->toString();
+      $build['#attached']['drupalSettings']['capi']['viewContent']['data'] = [
+        'product_variation_id' => $product_variation->id(),
+        'source_url' => $request->getUri(),
+      ];
+    }
+  }
+}
+
+/**
+ * Checks whether the current page is the full page view of passed-in product.
+ *
+ * @param \Drupal\commerce_product\Entity\ProductInterface $product
+ *   A product entity.
+ *
+ * @return bool
+ *   Return TRUE if this is a full product view; otherwise, return FALSE.
+ */
+function capi_is_product_page(ProductInterface $product): bool {
+  $route_match = \Drupal::routeMatch();
+
+  if ($route_match->getRouteName() === 'entity.commerce_product.canonical') {
+    $product_param = $route_match->getParameter('commerce_product');
+  }
+
+  return (!empty($product_param) && $product_param->id() === $product->id());
+}

@@ -1,0 +1,138 @@
+<?php
+
+/**
+ * @file
+ * Contains install and update functions for Meta Conversions API.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function capi_schema() {
+  $schema['capi_log'] = [
+    'description' => 'The base table for CAPI event logging.',
+    'fields' => [
+      'elid' => [
+        'description' => 'The primary identifier for a log record.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uid' => [
+        'description' => 'The {users}.uid that created this log entry.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'event_name' => [
+        'description' => 'The event name of the logged event.',
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 512,
+        'default' => '',
+      ],
+      'ip_address' => [
+        'description' => 'The IP address of the user.',
+        'type' => 'varchar',
+        'not null' => FALSE,
+        'length' => 512,
+        'default' => '',
+      ],
+      'user_agent' => [
+        'description' => "The browser's user agent.",
+        'type' => 'varchar',
+        'not null' => FALSE,
+        'length' => 512,
+        'default' => '',
+      ],
+      'source_url' => [
+        'description' => 'The source URL of the event.',
+        'type' => 'varchar',
+        'not null' => FALSE,
+        'length' => 512,
+        'default' => '',
+      ],
+      'fbp' => [
+        'description' => 'The value of the _fbp cookie.',
+        'type' => 'varchar',
+        'not null' => FALSE,
+        'length' => 512,
+        'default' => '',
+      ],
+      'fbc' => [
+        'description' => 'The value of the _fbc cookie.',
+        'type' => 'varchar',
+        'not null' => FALSE,
+        'length' => 512,
+        'default' => '',
+      ],
+      'user_data' => [
+        'description' => 'A serialized configuration object for user data.',
+        'type' => 'blob',
+        'not null' => FALSE,
+        'size' => 'big',
+      ],
+      'custom_data' => [
+        'description' => 'A serialized configuration object for custom data.',
+        'type' => 'blob',
+        'not null' => FALSE,
+        'size' => 'big',
+      ],
+      'event_data' => [
+        'description' => 'A serialized configuration object for event data.',
+        'type' => 'blob',
+        'not null' => FALSE,
+        'size' => 'big',
+      ],
+      'response_data' => [
+        'description' => 'A serialized configuration object for response data.',
+        'type' => 'blob',
+        'not null' => FALSE,
+        'size' => 'big',
+      ],
+      'created' => [
+        'description' => 'The Unix timestamp of when the event occurred.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['elid'],
+    'indexes' => [
+      'uid' => ['uid'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_requirements().
+ *
+ * Checks for Meta/Facebook Business SDK library installation.
+ */
+function capi_requirements($phase): array {
+  if ($phase == 'runtime') {
+    if (!class_exists('FacebookAds\Api') || !class_exists('FacebookAds\Object')) {
+      return [
+        'capi' => [
+          'title' => t('The Meta/Facebook Business SDK library is missing.'),
+          'description' => t('The Meta/Facebook Business SDK library is missing.'),
+          'severity' => REQUIREMENT_ERROR,
+        ],
+      ];
+    }
+    else {
+      return [
+        'capi' => [
+          'title' => t('Meta/Facebook Business SDK library'),
+          'description' => t('The Meta/Facebook Business SDK library is correctly installed.'),
+          'severity' => REQUIREMENT_OK,
+        ],
+      ];
+    }
+  }
+
+  return [];
+}

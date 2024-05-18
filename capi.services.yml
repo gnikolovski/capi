@@ -1,0 +1,42 @@
+services:
+  capi.pixel_builder_service:
+    class: Drupal\capi\Service\PixelBuilderService
+    arguments:
+      - '@config.factory'
+      - '@current_user'
+      - '@router.admin_context'
+
+  capi.capi_event_subscriber:
+    class: Drupal\capi\EventSubscriber\CapiEventSubscriber
+    arguments:
+      - '@capi.data_builder_service'
+      - '@capi.pixel_builder_service'
+      - '@capi.push_service'
+    tags:
+      - { name: event_subscriber }
+
+  capi.data_builder_service:
+    class: Drupal\capi\Service\DataBuilderService
+    arguments:
+      - '@commerce_store.current_store'
+      - '@commerce_order.price_calculator'
+      - '@config.factory'
+      - '@current_user'
+      - '@datetime.time'
+      - '@module_handler'
+      - '@request_stack'
+
+  capi.push_service:
+    class: Drupal\capi\Service\PushService
+    arguments:
+      - '@capi.log_service'
+      - '@config.factory'
+      - '@logger.factory'
+
+  capi.log_service:
+    class: Drupal\capi\Service\LogService
+    arguments:
+      - '@current_user'
+      - '@database'
+      - '@datetime.time'
+      - '@logger.factory'

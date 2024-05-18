@@ -1,0 +1,98 @@
+<?php
+
+/**
+ * @file
+ * Provides examples for integrating with the main module.
+ */
+
+use Drupal\commerce_order\Entity\OrderInterface;
+use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\commerce_product\Entity\ProductInterface;
+use Drupal\commerce_product\Entity\ProductVariationInterface;
+use Drupal\profile\Entity\ProfileInterface;
+use Drupal\taxonomy\TermInterface;
+use FacebookAds\Object\ServerSide\CustomData;
+use FacebookAds\Object\ServerSide\UserData;
+
+/**
+ * Implements hook_capi_view_content_user_data_alter().
+ */
+function capi_example_capi_view_content_user_data_alter(UserData &$user_data, ProductVariationInterface $product_variation): void {
+  capi_example_set_additional_user_data($user_data);
+}
+
+/**
+ * Implements hook_capi_view_content_custom_data_alter().
+ */
+function capi_example_capi_view_content_custom_data_alter(CustomData &$custom_data, ProductVariationInterface $product_variation): void {
+  $product = $product_variation->getProduct();
+
+  if (
+    $product instanceof ProductInterface &&
+    $product->get('field_catalog')->isEmpty() === FALSE
+  ) {
+    $catalog = $product->get('field_catalog')->entity;
+    if ($catalog instanceof TermInterface) {
+      $custom_data->setContentCategory($catalog->getName());
+    }
+  }
+}
+
+/**
+ * Implements hook_capi_add_to_cart_user_data_alter().
+ */
+function capi_example_capi_add_to_cart_user_data_alter(UserData $user_data, OrderItemInterface $order_item): void {
+  capi_example_set_additional_user_data($user_data);
+}
+
+/**
+ * Sets the user phone.
+ *
+ * @param \FacebookAds\Object\ServerSide\UserData $user_data
+ *   The user data.
+ * @param \Drupal\commerce_order\Entity\OrderInterface|null $order
+ *   The order.
+ */
+function capi_example_set_additional_user_data(UserData &$user_data, OrderInterface $order = NULL): void {
+  $current_user = \Drupal::currentUser();
+  if ($current_user->isAnonymous()) {
+    return;
+  }
+
+  if ($order instanceof OrderInterface) {
+    $profile = $order->getBillingProfile();
+  }
+  else {
+    /** @var \Drupal\profile\ProfileStorageInterface $profile_storage */
+    $profile_storage = \Drupal::entityTypeManager()->getStorage('profile');
+    $profile = $profile_storage->loadByUser($current_user, 'customer');
+  }
+
+  if (!$profile instanceof ProfileInterface) {
+    return;
+  }
+
+  if ($profile->get('field_phone')->isEmpty() === FALSE) {
+    $user_data->setPhone($profile->get('field_phone')->value);
+  }
+
+  if ($profile->get('address')->isEmpty() === FALSE) {
+    $address = $profile->get('address')->first();
+
+    // Define a mapping of user_data setter methods to address field properties.
+    $mapping = [
+      'setFirstName' => 'given_name',
+      'setLastName' => 'family_name',
+      'setCity' => 'locality',
+      'setCountryCode' => 'country_code',
+      'setZipCode' => 'postal_code',
+    ];
+
+    foreach ($mapping as $method_name => $property_name) {
+      $property_value = $address->get($property_name)->getValue();
+      if (!empty($property_value)) {
+        $user_data->$method_name($property_value);
+      }
+    }
+  }
+}

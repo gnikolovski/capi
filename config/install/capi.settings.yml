@@ -1,0 +1,10 @@
+enabled: false
+pixel_id: ''
+access_token: ''
+adjustment_types: {}
+role_toggle: exclude_listed
+roles: {}
+test_events: false
+test_event_code: ''
+log_events: true
+push_type: 'async_push'

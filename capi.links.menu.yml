@@ -1,0 +1,5 @@
+capi.settings_form:
+  title: 'Meta Conversions API settings'
+  description: 'Configure Meta Conversions API module.'
+  route_name: capi.settings_form
+  parent: system.admin_config_services

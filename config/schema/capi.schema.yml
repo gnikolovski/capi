@@ -1,0 +1,42 @@
+capi.settings:
+  type: config_object
+  label: 'Meta Conversions API settings'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Enabled'
+    pixel_id:
+      type: string
+      label: 'Meta Pixel ID'
+    access_token:
+      type: string
+      label: 'Meta access token'
+    adjustment_types:
+      type: mapping
+      label: 'Adjustments'
+      mapping:
+        name:
+          type: string
+          label: 'Adjustment name'
+    role_toggle:
+      type: string
+      label: 'Insert Meta Pixel for specific roles'
+    roles:
+      type: mapping
+      label: 'Selected roles'
+      mapping:
+        name:
+          type: string
+          label: 'Role name'
+    test_events:
+      type: boolean
+      label: 'Test events'
+    test_event_code:
+      type: string
+      label: 'Test event code'
+    log_events:
+      type: boolean
+      label: 'Log events'
+    push_type:
+      type: string
+      label: 'Push type'

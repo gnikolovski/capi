@@ -1,0 +1,8 @@
+name: 'Meta Conversions API Example'
+type: module
+description: 'Provides examples for integrating with the main module of the Meta Conversions API.'
+package: 'Statistics'
+core_version_requirement: ^9.5 || ^10
+dependencies:
+  - capi:capi
+  - profile:profile

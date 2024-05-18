@@ -1,0 +1,17 @@
+capi.settings_form:
+  path: '/admin/config/services/meta-conversions-api'
+  defaults:
+    _form: '\Drupal\capi\Form\SettingsForm'
+    _title: 'Meta Conversions API settings'
+  requirements:
+    _permission: 'administer capi configuration'
+
+capi.view_content_endpoint:
+  path: '/meta-conversions-api/v1/view-content'
+  methods: [POST]
+  defaults:
+    _controller: '\Drupal\capi\Controller\CapiController::viewContent'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE

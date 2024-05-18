@@ -1,0 +1,15 @@
+name: 'Meta Conversions API'
+type: module
+description: 'Provides Meta Conversion API functionality for Drupal.'
+package: 'Statistics'
+core_version_requirement: ^9.5 || ^10
+configure: capi.settings_form
+dependencies:
+  - core:views
+  - commerce:commerce
+  - commerce:commerce_cart
+  - commerce:commerce_order
+  - commerce:commerce_price
+  - commerce:commerce_product
+  - commerce:commerce_store
+  - state_machine:state_machine
