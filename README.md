@@ -57,6 +57,9 @@ Settings tab. Find your Pixel ID, referred to as the Dataset ID. Then, generate
 the access token by clicking on the 'Generate access token' link in the
 Conversions API section.
 
+Find more information about configuring the module here:
+[https://gorannikolovski.com/blog/facebook-meta-pixel-and-conversions-api-for-drupal#configuration](https://gorannikolovski.com/blog/facebook-meta-pixel-and-conversions-api-for-drupal#configuration)
+
 
 MAINTAINERS
 -----------
