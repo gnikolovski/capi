@@ -5,6 +5,8 @@ capi.settings_form:
     _title: 'Meta Conversions API settings'
   requirements:
     _permission: 'administer capi configuration'
+  options:
+    _admin_route: TRUE
 
 capi.view_content_endpoint:
   path: '/meta-conversions-api/v1/view-content'
