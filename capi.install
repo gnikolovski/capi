@@ -114,7 +114,7 @@ function capi_schema() {
  */
 function capi_requirements($phase): array {
   if ($phase == 'runtime') {
-    if (!class_exists('FacebookAds\Api') || !class_exists('FacebookAds\Object')) {
+    if (!class_exists('FacebookAds\Api')) {
       return [
         'capi' => [
           'title' => t('The Meta/Facebook Business SDK library is missing.'),
