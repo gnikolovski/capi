@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\capi\EventSubscriber;
 
 use Drupal\capi\Service\DataBuilderService;
@@ -42,7 +44,7 @@ class CapiEventSubscriber implements EventSubscriberInterface {
    *
    * @see https://www.drupal.org/project/commerce/issues/3104564
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       ProductEvents::PRODUCT_VARIATION_AJAX_CHANGE => ['handleProductVariationChange'],
       CartEvents::CART_ORDER_ITEM_ADD => ['handleOrderItemAdd'],

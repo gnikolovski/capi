@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\capi\Form;
 
 use Drupal\commerce_order\AdjustmentTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\user\Entity\Role;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,11 +23,19 @@ class SettingsForm extends ConfigFormBase {
   protected AdjustmentTypeManager $adjustmentTypeManager;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected EntityTypeManagerInterface $entityTypeManager;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->adjustmentTypeManager = $container->get('plugin.manager.commerce_adjustment_type');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
     return $instance;
   }
 
@@ -119,18 +129,17 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'radios',
       '#title' => $this->t('Insert the Meta Pixel for specific roles'),
       '#options' => [
-        'exclude_listed' => t('All roles except the selected roles'),
-        'include_listed' => t('Only the selected roles'),
+        'exclude_listed' => $this->t('All roles except the selected roles'),
+        'include_listed' => $this->t('Only the selected roles'),
       ],
       '#default_value' => $config->get('role_toggle') ?? 'exclude_listed',
     ];
 
+    $roles = $this->entityTypeManager->getStorage('user_role')->loadMultiple();
     $form['insertion_conditions']['roles'] = [
       '#type' => 'checkboxes',
       '#title' => $this->t('Selected roles'),
-      '#options' => $options = array_map(function ($role) {
-        return $role->label();
-      }, Role::loadMultiple()),
+      '#options' => array_map(static fn($role) => $role->label(), $roles),
       '#default_value' => $config->get('roles') ?? [],
     ];
 

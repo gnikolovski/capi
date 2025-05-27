@@ -5,6 +5,10 @@
  * Contains install and update functions for Meta Conversions API.
  */
 
+declare(strict_types=1);
+
+use FacebookAds\Api;
+
 /**
  * Implements hook_schema().
  */
@@ -114,7 +118,7 @@ function capi_schema() {
  */
 function capi_requirements($phase): array {
   if ($phase == 'runtime') {
-    if (!class_exists('FacebookAds\Api')) {
+    if (!class_exists(Api::class)) {
       return [
         'capi' => [
           'title' => t('The Meta/Facebook Business SDK library is missing.'),
@@ -123,15 +127,14 @@ function capi_requirements($phase): array {
         ],
       ];
     }
-    else {
-      return [
-        'capi' => [
-          'title' => t('Meta/Facebook Business SDK library'),
-          'description' => t('The Meta/Facebook Business SDK library is correctly installed.'),
-          'severity' => REQUIREMENT_OK,
-        ],
-      ];
-    }
+
+    return [
+      'capi' => [
+        'title' => t('Meta/Facebook Business SDK library'),
+        'description' => t('The Meta/Facebook Business SDK library is correctly installed.'),
+        'severity' => REQUIREMENT_OK,
+      ],
+    ];
   }
 
   return [];

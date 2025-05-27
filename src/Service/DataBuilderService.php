@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\capi\Service;
 
 use Drupal\commerce\Context;
@@ -188,7 +190,7 @@ class DataBuilderService {
    * @return \FacebookAds\Object\ServerSide\UserData
    *   The user data.
    */
-  public function getUserData(string $source_url = NULL): UserData {
+  public function getUserData(?string $source_url = NULL): UserData {
     $request = $this->requestStack->getCurrentRequest();
 
     $user_data = new UserData();

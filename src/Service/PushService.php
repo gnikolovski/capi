@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\capi\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -42,7 +44,7 @@ class PushService {
    * @return bool
    *   Return TRUE if the event is pushed to Meta; otherwise, return FALSE.
    */
-  public function push(?Event $event) {
+  public function push(?Event $event): bool {
     if ($event === NULL) {
       $this->loggerFactory->get('capi')->warning('The event is empty. Nothing has been sent to Meta.');
       return FALSE;
@@ -60,7 +62,7 @@ class PushService {
       return FALSE;
     }
 
-    Api::init(NULL, NULL, $access_token, FALSE);
+    Api::init('', '', $access_token, FALSE);
 
     $push_type = $config->get('push_type') ?? 'async_push';
 

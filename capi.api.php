@@ -5,6 +5,8 @@
  * Hooks specific to the Meta Conversions API module.
  */
 
+declare(strict_types=1);
+
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use FacebookAds\Object\ServerSide\CustomData;

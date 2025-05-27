@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\capi\Controller;
 
 use Drupal\capi\Service\DataBuilderService;
@@ -90,7 +92,7 @@ class CapiController extends ControllerBase {
     $event = $this->dataBuilderService->getEvent($product_variation, $additional_info);
     $result = $this->pushService->push($event);
 
-    if ($result === TRUE) {
+    if ($result) {
       return new JsonResponse(['message' => 'The request has been sent to Meta.'], 200);
     }
 

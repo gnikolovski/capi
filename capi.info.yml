@@ -3,7 +3,7 @@ type: module
 description: 'Provides Meta Conversion API functionality for Drupal.'
 package: 'Statistics'
 version: '1.0.0-alpha1'
-core_version_requirement: ^9.5 || ^10
+core_version_requirement: ^9.5 || ^10 || ^11
 configure: capi.settings_form
 dependencies:
   - core:views

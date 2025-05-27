@@ -5,6 +5,8 @@
  * Provides Meta Conversions API functionality.
  */
 
+declare(strict_types=1);
+
 use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Core\Cache\Cache;
@@ -51,7 +53,7 @@ function capi_commerce_product_view(
   array &$build,
   ProductInterface $product,
   EntityViewDisplayInterface $display,
-  $view_mode
+  $view_mode,
 ): void {
   $build['#cache']['contexts'] = Cache::mergeContexts($build['#cache']['contexts'], [
     'user.roles',
