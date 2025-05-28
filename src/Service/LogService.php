@@ -39,10 +39,10 @@ class LogService {
    *
    * @param \FacebookAds\Object\ServerSide\Event $event
    *   The event.
-   * @param array $response_data
+   * @param string|array $response_data
    *   The response data.
    */
-  public function insert(Event $event, array $response_data = []): void {
+  public function insert(Event $event, string|array $response_data): void {
     if ($this->database->schema()->tableExists('capi_log')) {
       /** @var \FacebookAds\Object\ServerSide\UserData $user_data */
       $user_data = $event->getUserData();
@@ -58,7 +58,7 @@ class LogService {
         'user_data' => json_encode((array) $event->getUserData()),
         'custom_data' => json_encode((array) $event->getCustomData()),
         'event_data' => json_encode((array) $event),
-        'response_data' => json_encode($response_data),
+        'response_data' => is_string($response_data) ? $response_data : json_encode($response_data),
         'created' => $this->time->getRequestTime(),
       ];
 
