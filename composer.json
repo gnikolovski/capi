@@ -20,7 +20,7 @@
     "require": {
         "drupal/commerce": "^2.27 || ^3.0",
         "drupal/core": "^9.5 || ^10 || ^11",
-        "facebook/php-business-sdk": "^19.0.2",
+        "facebook/php-business-sdk": "^22.0",
         "php": ">=8.0"
     }
 }
