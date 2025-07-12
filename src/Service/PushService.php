@@ -62,7 +62,7 @@ class PushService {
       return FALSE;
     }
 
-    Api::init('', '', $access_token, FALSE);
+    Api::init(NULL, NULL, $access_token, FALSE);
 
     $push_type = $config->get('push_type') ?? 'async_push';
 
