@@ -99,7 +99,13 @@ class DataBuilderService {
     $user_data = $this->getUserData($source_url);
 
     $custom_data = new CustomData();
-    $custom_data->setCurrency($product_variation->getPrice()->getCurrencyCode());
+
+    $price = $product_variation->getPrice();
+    if ($price === NULL) {
+      throw new \RuntimeException('Product variation price is not available.');
+    }
+
+    $custom_data->setCurrency($price->getCurrencyCode());
     $custom_data->setValue($this->getCalculatedPrice($product_variation));
     $custom_data->setContentIds([$product_variation->getSku()]);
     $custom_data->setContentType('product');
